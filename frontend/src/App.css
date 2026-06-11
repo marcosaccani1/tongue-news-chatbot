@@ -1,0 +1,155 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f3f1ed;
+  color: #111;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 48px 20px;
+}
+
+.container {
+  width: 100%;
+  max-width: 850px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.badge {
+  display: inline-block;
+  background: #111;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 14px;
+}
+
+.header h1 {
+  font-size: 56px;
+  margin: 0 0 10px;
+  letter-spacing: -2px;
+}
+
+.header p {
+  font-size: 18px;
+  color: #555;
+  max-width: 620px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.card,
+.result {
+  background: white;
+  border-radius: 22px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.09);
+  margin-bottom: 24px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+  margin-top: 18px;
+}
+
+label:first-child {
+  margin-top: 0;
+}
+
+input,
+textarea {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 14px;
+  padding: 15px;
+  font-size: 16px;
+  font-family: inherit;
+  outline: none;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #111;
+}
+
+textarea {
+  min-height: 160px;
+  resize: vertical;
+}
+
+button {
+  margin-top: 24px;
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  padding: 16px;
+  font-size: 17px;
+  font-weight: bold;
+  background: #111;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #333;
+}
+
+button:disabled {
+  background: #777;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #c62828;
+  font-weight: bold;
+  margin-top: 16px;
+}
+
+.result h2 {
+  margin-top: 0;
+}
+
+.result p {
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+.sources {
+  margin-top: 28px;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+}
+
+.sources h3 {
+  margin-top: 0;
+}
+
+.sources a {
+  display: block;
+  color: #111;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.sources-note {
+  color: #666;
+  font-size: 14px;
+  margin-top: -6px;
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
