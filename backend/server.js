@@ -8,12 +8,31 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+const allowedOrigin =
+  process.env.FRONTEND_URL || "http://localhost:5173";
+
+app.use(
+  cors({
+    origin: allowedOrigin,
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+  })
+);
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
   res.status(200).json({
-    message: "Tongue backend is running"
+    message: "Tongue backend is running",
+  });
+});
+
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    service: "tongue-backend",
+    environment: process.env.NODE_ENV || "development",
+    timestamp: new Date().toISOString(),
   });
 });
 
