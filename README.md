@@ -615,6 +615,63 @@ Le immagini vengono costruite per verificarne la validità, ma in questa fase no
 
 Se un comando di linting restituisce un errore, il relativo job fallisce e la build Docker non viene eseguita.
 
+## Pipeline CD
+
+La Continuous Deployment utilizza GitHub Actions e Netlify.
+
+Il job di deploy viene eseguito soltanto quando si verifica un push sul branch `main` e dopo il completamento corretto dei controlli di Continuous Integration.
+
+Il flusso è il seguente:
+
+```text
+Push su main
+      |
+      v
+Lint e build frontend
+      |
+      v
+Lint backend
+      |
+      v
+Build immagini Docker
+      |
+      v
+Deploy frontend su Netlify
+```
+
+Il frontend viene compilato utilizzando la repository variable:
+
+```text
+VITE_API_URL
+```
+
+La variabile contiene l’URL pubblico del backend ospitato su Render:
+
+```text
+https://tongue-news-backend.onrender.com
+```
+
+Le credenziali necessarie per Netlify sono conservate nei GitHub Actions repository secrets:
+
+```text
+NETLIFY_AUTH_TOKEN
+NETLIFY_SITE_ID
+```
+
+I relativi valori non sono presenti nel repository e non vengono stampati intenzionalmente nei log della pipeline.
+
+Il deploy di produzione utilizza Netlify CLI:
+
+```bash
+npx netlify-cli@latest deploy \
+  --dir=frontend/dist \
+  --prod \
+  --site="$NETLIFY_SITE_ID" \
+  --auth="$NETLIFY_AUTH_TOKEN"
+```
+
+Ogni push su `main` che supera correttamente la CI aggiorna automaticamente il frontend pubblico su Netlify.
+
 ## Stato del progetto
 
 - [x] Analisi iniziale
@@ -629,7 +686,7 @@ Se un comando di linting restituisce un errore, il relativo job fallisce e la bu
 - [x] Documentazione dei comandi Docker
 - [x] Linting backend
 - [x] Pipeline CI
-- [ ] Configurazione GitHub Secrets
+- [x] Configurazione GitHub Secrets
 - [ ] Pipeline CD
 - [ ] Deploy automatico
 - [ ] Integrazione Sentry
