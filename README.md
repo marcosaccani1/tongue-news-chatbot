@@ -575,7 +575,7 @@ Sono state completate le seguenti verifiche locali:
 - [x] Docker Compose
 - [x] Test locale dei container
 - [x] Documentazione dei comandi Docker
-- [ ] Linting backend
+- [x] Linting backend
 - [ ] Pipeline CI
 - [ ] Configurazione GitHub Secrets
 - [ ] Pipeline CD
