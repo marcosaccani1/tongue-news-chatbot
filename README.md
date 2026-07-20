@@ -730,6 +730,8 @@ Dopo la verifica in produzione, il pulsante di test viene disabilitato impostand
 VITE_ENABLE_SENTRY_TEST=false
 ```
 
+L’integrazione è stata verificata generando un errore controllato in ambiente `production`. L’evento è stato registrato correttamente nella dashboard Sentry con timestamp, URL, ambiente e stack trace.
+
 ## Stato del progetto
 
 - [x] Analisi iniziale
@@ -747,6 +749,6 @@ VITE_ENABLE_SENTRY_TEST=false
 - [x] Configurazione GitHub Secrets
 - [x] Pipeline CD
 - [x] Deploy automatico
-- [ ] Integrazione Sentry
+- [x] Integrazione Sentry
 - [ ] Configurazione UptimeRobot
 - [ ] Raccolta screenshot e link finali

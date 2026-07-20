@@ -7,6 +7,7 @@ on:
       - develop
       - "feature/**"
       - "fix/**"
+      - "chore/**"
 
   pull_request:
     branches:
@@ -136,9 +137,9 @@ jobs:
           VITE_API_URL: ${{ vars.VITE_API_URL }}
           VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
           VITE_APP_ENV: production
-          VITE_ENABLE_SENTRY_TEST: "true"
+          VITE_ENABLE_SENTRY_TEST: "false"
         run: |
-          echo "Building production frontend with Sentry enabled"
+          echo "Building production frontend with Sentry enabled and test button disabled"
           npm run build
 
       - name: Verify production bundle
@@ -149,12 +150,12 @@ jobs:
             exit 1
           fi
 
-          if ! grep -R -q "Simula errore Sentry" frontend/dist; then
-            echo "Errore: il pulsante Sentry non è presente nel bundle"
+          if grep -R -q "Simula errore Sentry" frontend/dist; then
+            echo "Errore: il pulsante Sentry è ancora presente nel bundle"
             exit 1
           fi
 
-          echo "Pulsante Sentry trovato nel bundle di produzione"
+          echo "Pulsante Sentry correttamente disabilitato nel bundle di produzione"
           find frontend/dist -maxdepth 2 -type f -print
 
       - name: Deploy verified bundle to Netlify
