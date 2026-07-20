@@ -5,7 +5,8 @@ on:
     branches:
       - main
       - develop
-      - feature/devops-lifecycle
+      - "feature/**"
+      - "fix/**"
   pull_request:
     branches:
       - main
@@ -44,6 +45,9 @@ jobs:
         run: npm run build
         env:
           VITE_API_URL: http://localhost:5050
+          VITE_SENTRY_DSN: ""
+          VITE_APP_ENV: ci
+          VITE_ENABLE_SENTRY_TEST: "false"
 
   backend-quality:
     name: Backend lint
@@ -73,6 +77,7 @@ jobs:
   docker-build:
     name: Build Docker images
     runs-on: ubuntu-latest
+
     needs:
       - frontend-quality
       - backend-quality
@@ -125,20 +130,41 @@ jobs:
 
       - name: Build production frontend
         working-directory: frontend
-        run: npm run build
+        shell: bash
         env:
           VITE_API_URL: ${{ vars.VITE_API_URL }}
           VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
           VITE_APP_ENV: production
           VITE_ENABLE_SENTRY_TEST: "true"
+        run: |
+          echo "Building production frontend with Sentry enabled"
+          npm run build
 
-      - name: Deploy to Netlify production
-        run: >
-          npx netlify-cli@latest deploy
-          --dir=frontend/dist
-          --prod
-          --site="$NETLIFY_SITE_ID"
-          --auth="$NETLIFY_AUTH_TOKEN"
+      - name: Verify production bundle
+        shell: bash
+        run: |
+          if [ ! -f "frontend/dist/index.html" ]; then
+            echo "Errore: frontend/dist/index.html non trovato"
+            exit 1
+          fi
+
+          if ! grep -R -q "Simula errore Sentry" frontend/dist; then
+            echo "Errore: il pulsante Sentry non è presente nel bundle"
+            exit 1
+          fi
+
+          echo "Pulsante Sentry trovato nel bundle di produzione"
+          find frontend/dist -maxdepth 2 -type f -print
+
+      - name: Deploy verified bundle to Netlify
+        shell: bash
+        run: |
+          npx netlify-cli@latest deploy \
+            --dir="$GITHUB_WORKSPACE/frontend/dist" \
+            --prod \
+            --site="$NETLIFY_SITE_ID" \
+            --auth="$NETLIFY_AUTH_TOKEN" \
+            --message="GitHub Actions ${GITHUB_SHA}"
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
