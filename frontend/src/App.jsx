@@ -1,4 +1,5 @@
 import { useState } from "react";
+import * as Sentry from "@sentry/react";
 import { getNewsSummary } from "./services/api";
 import "./App.css";
 
@@ -26,10 +27,37 @@ function App() {
       setSummary(data.summary);
       setSources(data.sources || []);
     } catch (err) {
-      setError(err.message || "Si è verificato un errore durante la generazione del riassunto.");
+      Sentry.captureException(err, {
+        tags: {
+          operation: "generate-news-summary",
+        },
+        extra: {
+          selectedDate: date,
+          requestedTopic: message,
+        },
+      });
+
+      setError(
+        err.message ||
+          "Si è verificato un errore durante la generazione del riassunto.",
+      );
     } finally {
       setLoading(false);
     }
+  };
+
+  const simulateSentryError = () => {
+    const testError = new Error(
+      "Errore di test Sentry - Tongue DevOps project",
+    );
+
+    Sentry.captureException(testError, {
+      tags: {
+        operation: "sentry-test",
+      },
+    });
+
+    console.error(testError);
   };
 
   return (
@@ -45,23 +73,31 @@ function App() {
         </header>
 
         <main className="card">
-          <label>Seleziona una data</label>
+          <label htmlFor="news-date">Seleziona una data</label>
           <input
+            id="news-date"
             type="date"
             value={date}
-            onChange={(e) => setDate(e.target.value)}
+            onChange={(event) => setDate(event.target.value)}
           />
 
-          <label>Cosa vuoi sapere?</label>
+          <label htmlFor="news-message">Cosa vuoi sapere?</label>
           <textarea
+            id="news-message"
             placeholder="Esempio: Riassumimi le principali notizie sulla sostenibilità ambientale in Italia"
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={(event) => setMessage(event.target.value)}
           />
 
-          <button onClick={handleSubmit} disabled={loading}>
+          <button type="button" onClick={handleSubmit} disabled={loading}>
             {loading ? "Analisi in corso..." : "Genera riassunto"}
           </button>
+
+          {import.meta.env.VITE_ENABLE_SENTRY_TEST === "true" && (
+            <button type="button" onClick={simulateSentryError}>
+              Simula errore Sentry
+            </button>
+          )}
 
           {error && <p className="error">{error}</p>}
         </main>
@@ -73,14 +109,16 @@ function App() {
 
             {sources.length > 0 && (
               <div className="sources">
-              <h3>Fonti utilizzate</h3>
-              <p className="sources-note">
-                Articoli recuperati tramite API giornalistiche e utilizzati per generare il riassunto.
-              </p>
+                <h3>Fonti utilizzate</h3>
+
+                <p className="sources-note">
+                  Articoli recuperati tramite API giornalistiche e utilizzati
+                  per generare il riassunto.
+                </p>
 
                 {sources.slice(0, 5).map((source, index) => (
                   <a
-                    key={index}
+                    key={`${source.url}-${index}`}
                     href={source.url}
                     target="_blank"
                     rel="noreferrer"

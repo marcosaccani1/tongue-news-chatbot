@@ -88,6 +88,9 @@ jobs:
         run: |
           docker build \
             --build-arg VITE_API_URL=http://localhost:5050 \
+            --build-arg VITE_SENTRY_DSN="${{ vars.VITE_SENTRY_DSN }}" \
+            --build-arg VITE_APP_ENV=ci \
+            --build-arg VITE_ENABLE_SENTRY_TEST=false \
             -t tongue-frontend:ci \
             ./frontend
 
@@ -125,6 +128,9 @@ jobs:
         run: npm run build
         env:
           VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
+          VITE_APP_ENV: production
+          VITE_ENABLE_SENTRY_TEST: "true"
 
       - name: Deploy to Netlify production
         run: >

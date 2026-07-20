@@ -34,6 +34,9 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_URL: http://localhost:5050
+        VITE_SENTRY_DSN: ${VITE_SENTRY_DSN:-}
+        VITE_APP_ENV: development
+        VITE_ENABLE_SENTRY_TEST: "true"
     container_name: tongue-frontend
     ports:
       - "8080:80"
