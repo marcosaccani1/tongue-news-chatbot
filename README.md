@@ -672,6 +672,64 @@ npx netlify-cli@latest deploy \
 
 Ogni push su `main` che supera correttamente la CI aggiorna automaticamente il frontend pubblico su Netlify.
 
+### URL pubblici
+
+- Frontend: `https://tongue-news-chatbot.netlify.app`
+- Backend: `https://tongue-news-backend.onrender.com`
+- Backend health check: `https://tongue-news-backend.onrender.com/health`
+
+Il backend autorizza tramite CORS l’origine del frontend Netlify attraverso la variabile d’ambiente `FRONTEND_URL` configurata su Render.
+
+## Error tracking con Sentry
+
+Sentry è integrato nel frontend React tramite il pacchetto:
+
+```text
+@sentry/react
+```
+
+L’SDK viene inizializzato all’avvio dell’applicazione utilizzando:
+
+```text
+VITE_SENTRY_DSN
+VITE_APP_ENV
+```
+
+Il DSN viene gestito come repository variable di GitHub Actions e incorporato durante la build del frontend.
+
+Gli errori reali generati durante le chiamate API vengono inviati a Sentry tramite:
+
+```javascript
+Sentry.captureException(error);
+```
+
+Per verificare l’integrazione è disponibile temporaneamente un pulsante controllato dalla variabile:
+
+```text
+VITE_ENABLE_SENTRY_TEST
+```
+
+Il pulsante genera l’errore controllato:
+
+```text
+Errore di test Sentry - Tongue DevOps project
+```
+
+Nella dashboard Sentry è possibile analizzare:
+
+- messaggio dell’errore;
+- ambiente;
+- data e ora;
+- pagina di origine;
+- browser;
+- stack trace.
+
+Dopo la verifica in produzione, il pulsante di test viene disabilitato impostando:
+
+```env
+VITE_ENABLE_SENTRY_TEST=false
+```
+
 ## Stato del progetto
 
 - [x] Analisi iniziale
@@ -687,8 +745,8 @@ Ogni push su `main` che supera correttamente la CI aggiorna automaticamente il f
 - [x] Linting backend
 - [x] Pipeline CI
 - [x] Configurazione GitHub Secrets
-- [ ] Pipeline CD
-- [ ] Deploy automatico
+- [x] Pipeline CD
+- [x] Deploy automatico
 - [ ] Integrazione Sentry
 - [ ] Configurazione UptimeRobot
 - [ ] Raccolta screenshot e link finali
