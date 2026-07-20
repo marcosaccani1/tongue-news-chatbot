@@ -563,6 +563,58 @@ Sono state completate le seguenti verifiche locali:
 - verifica di entrambi i servizi con stato healthy;
 - esecuzione di una richiesta completa dall’interfaccia.
 
+## Pipeline CI
+
+La Continuous Integration è implementata tramite GitHub Actions nel file:
+
+```text
+.github/workflows/ci.yml
+```
+
+Il workflow viene eseguito automaticamente in caso di:
+
+- push su `main`;
+- push su `develop`;
+- push su `feature/devops-lifecycle`;
+- pull request verso `main`;
+- pull request verso `develop`.
+
+La pipeline contiene tre job.
+
+### Frontend lint and build
+
+Il job:
+
+1. scarica il repository;
+2. configura Node.js;
+3. installa le dipendenze con `npm ci`;
+4. esegue il linting;
+5. crea la build di produzione del frontend.
+
+### Backend lint
+
+Il job:
+
+1. scarica il repository;
+2. configura Node.js;
+3. installa le dipendenze con `npm ci`;
+4. esegue il linting del backend.
+
+### Build Docker images
+
+Il job viene eseguito soltanto dopo il completamento corretto dei controlli frontend e backend.
+
+Costruisce:
+
+```text
+tongue-backend:ci
+tongue-frontend:ci
+```
+
+Le immagini vengono costruite per verificarne la validità, ma in questa fase non vengono pubblicate in un container registry.
+
+Se un comando di linting restituisce un errore, il relativo job fallisce e la build Docker non viene eseguita.
+
 ## Stato del progetto
 
 - [x] Analisi iniziale
@@ -576,7 +628,7 @@ Sono state completate le seguenti verifiche locali:
 - [x] Test locale dei container
 - [x] Documentazione dei comandi Docker
 - [x] Linting backend
-- [ ] Pipeline CI
+- [x] Pipeline CI
 - [ ] Configurazione GitHub Secrets
 - [ ] Pipeline CD
 - [ ] Deploy automatico
