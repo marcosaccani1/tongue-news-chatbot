@@ -1,169 +1,637 @@
-# Tongue – AI News Analyst Chatbot
+# Tongue – DevOps Lifecycle Project
 
-Tongue è un chatbot intelligente progettato per fornire agli utenti un riassunto rapido, chiaro e affidabile delle principali notizie a partire da articoli giornalistici recuperati tramite API esterne.
+## Descrizione del progetto
 
-Il progetto nasce dall'idea di trasformare il modo in cui le persone consumano informazione online. Oggi molti utenti passano parte della giornata sui social media, scorrendo rapidamente contenuti brevi e immediati. Tongue applica questa logica al mondo dell'informazione, offrendo pillole giornalistiche sintetiche ma basate su fonti reali.
+Tongue è un’applicazione web full stack che consente all’utente di selezionare una data, inserire un argomento di interesse e ottenere un riassunto delle notizie tramite intelligenza artificiale.
 
-## Obiettivo
+Il frontend è sviluppato con React e Vite, mentre il backend utilizza Node.js ed Express. Il backend comunica con servizi esterni per recuperare le notizie e generare il riassunto, e utilizza MongoDB Atlas per la persistenza dei dati.
 
-L'obiettivo dell'applicazione è permettere all'utente di capire rapidamente cosa è successo nel mondo, senza dover leggere decine di articoli.
+## Architettura
 
-L'utente può selezionare una data, scrivere in linguaggio naturale quali notizie desidera leggere e ricevere un riassunto generato dall'AI.
+```text
+Utente
+  |
+  v
+Frontend React + Vite
+  |
+  v
+Backend Node.js + Express
+  |
+  +--> News API
+  |
+  +--> OpenAI API
+  |
+  +--> MongoDB Atlas
+```
 
-Il sistema recupera automaticamente articoli giornalistici tramite API esterne, li analizza con un modello linguistico e restituisce una sintesi breve, neutrale e comprensibile.
+## Obiettivi DevOps
 
-## Funzionalità principali
+L’obiettivo del progetto è implementare un ciclo DevOps completo comprendente:
 
-- Inserimento di una richiesta in linguaggio naturale.
-- Selezione della data di interesse.
-- Recupero automatico degli articoli tramite News API.
-- Analisi degli articoli tramite modello LLM.
-- Generazione di un riassunto breve, neutrale e comprensibile.
-- Visualizzazione del risultato direttamente nella pagina web.
-- Visualizzazione delle fonti utilizzate.
-- Salvataggio delle conversazioni in MongoDB.
-- Gestione dei casi in cui non sono disponibili articoli sufficienti.
+- ambiente di sviluppo locale;
+- containerizzazione con Docker;
+- orchestrazione locale con Docker Compose;
+- separazione tra development, staging e production;
+- gestione sicura delle variabili d’ambiente e dei secrets;
+- pipeline CI con linting e build;
+- pipeline CD con deploy automatico;
+- monitoraggio della disponibilità del servizio;
+- error tracking tramite Sentry.
 
-## Tecnologie utilizzate
+## Ambienti
 
-- React + Vite per il front end.
-- Node.js + Express per il back end.
-- News API per il recupero degli articoli.
-- OpenAI API per la generazione del riassunto.
-- MongoDB Atlas per la persistenza delle conversazioni.
-- Netlify per il deploy del front end.
-- Render per il deploy del back end.
+### Development
 
-## Architettura del progetto
+Ambiente utilizzato per lo sviluppo e i test locali.
 
-Il progetto è composto da due parti principali:
+Caratteristiche:
 
-1. Front end React, che permette all'utente di inserire una richiesta e selezionare una data.
-2. Back end Node.js, che riceve la richiesta, recupera gli articoli, chiama il modello AI e salva la conversazione.
+- frontend Vite disponibile su `http://localhost:5173` quando avviato tramite npm;
+- frontend Docker disponibile su `http://localhost:8080`;
+- backend disponibile su `http://localhost:5050`;
+- variabili configurate tramite file `.env` locali;
+- avvio tramite npm oppure Docker Compose;
+- logging dettagliato;
+- ambiente Sentry impostato su `development`.
 
-Il flusso dell'applicazione è il seguente:
+### Staging
 
-1. L'utente inserisce una richiesta in linguaggio naturale e seleziona una data.
-2. Il front end invia i dati al back end tramite una richiesta HTTP POST.
-3. Il back end interroga News API per recuperare articoli coerenti con la richiesta.
-4. Gli articoli recuperati vengono passati a un modello LLM insieme a un system prompt.
-5. Il modello genera un riassunto giornalistico chiaro, sintetico e neutrale.
-6. La conversazione viene salvata in MongoDB.
-7. Il risultato viene restituito al front end e mostrato all'utente.
+Ambiente utilizzato per validare l’applicazione prima del rilascio in produzione.
 
-## Endpoint principale
+Caratteristiche:
 
-L'endpoint principale del back end è:
+- deploy associato al branch `develop` o a una preview deployment;
+- configurazioni separate dalla produzione;
+- variabili d’ambiente dedicate;
+- ambiente Sentry impostato su `staging`;
+- test delle funzionalità e delle integrazioni esterne;
+- verifica del comportamento dell’app prima del merge su `main`.
 
-```http
-POST /api/news-summary
+### Production
 
- Esempio di body della richiesta: json
-{
-  "message": "politica italiana",
-  "date": "2026-06-11"
-}
- Esempio di risposta: json
-{
-  "summary": "Riassunto generato dall'AI",
-  "sources": [
-    {
-      "title": "Titolo articolo",
-      "source": "Fonte",
-      "url": "Link articolo"
-    }
-  ]
-}
- ## System prompt  Il modello AI agisce come un news analyst per Tongue.  Il suo compito è analizzare gli articoli forniti dal sistema e produrre un riassunto giornalistico breve, chiaro, neutrale e basato esclusivamente sulle fonti disponibili.  Il modello deve:  - riassumere i fatti principali; - usare un tono formale e giornalistico; - evitare opinioni personali o giudizi soggettivi; - non inventare informazioni non presenti negli articoli; - dichiarare esplicitamente quando le fonti non sono sufficienti; - evidenziare eventi chiave, trend e collegamenti tra le notizie; - mantenere la risposta breve e comprensibile.  ## Persistenza dei dati  La persistenza dei dati conversazionali è gestita tramite MongoDB Atlas.  Ogni conversazione viene salvata con le seguenti informazioni:  - messaggio dell'utente; - data selezionata; - articoli recuperati; - risposta generata dall'AI; - data e ora di creazione; - data e ora di aggiornamento.  Questa funzionalità permette di conservare lo storico delle interazioni e dimostra la gestione dei dati conversazionali richiesta dal progetto.  ## Struttura del progetto text
+Ambiente pubblico utilizzato dagli utenti finali.
+
+Caratteristiche:
+
+- deploy automatico dopo un push sul branch `main`;
+- frontend pubblicato su Netlify;
+- backend pubblicato su Render;
+- database ospitato su MongoDB Atlas;
+- secrets configurati nelle piattaforme cloud e in GitHub;
+- uptime monitor configurato con UptimeRobot;
+- error tracking configurato con Sentry;
+- ambiente Sentry impostato su `production`.
+
+## Strategia Git
+
+Il progetto utilizza i seguenti branch:
+
+- `feature/*`: sviluppo di nuove funzionalità o configurazioni;
+- `develop`: integrazione e staging;
+- `main`: versione stabile destinata alla produzione.
+
+Il lavoro relativo al ciclo DevOps viene inizialmente sviluppato nel branch:
+
+```text
+feature/devops-lifecycle
+```
+
+## Strumenti scelti
+
+### GitHub
+
+GitHub viene utilizzato per ospitare il repository, gestire il versionamento del codice e conservare la cronologia delle modifiche.
+
+### GitHub Actions
+
+GitHub Actions viene utilizzato per la pipeline CI/CD perché:
+
+- è integrato direttamente con GitHub;
+- permette di eseguire workflow automatici a ogni push o pull request;
+- consente la gestione centralizzata dei secrets;
+- rende facilmente consultabili i log e la cronologia delle pipeline;
+- permette di bloccare il deploy quando lint o build falliscono;
+- non richiede l’integrazione di una piattaforma CI esterna.
+
+### Docker
+
+Docker viene utilizzato per creare immagini riproducibili del frontend e del backend.
+
+Il frontend utilizza una build multi-stage:
+
+1. Node.js genera i file statici dell’applicazione;
+2. Nginx pubblica il contenuto della cartella `dist`.
+
+Il backend utilizza un’immagine Node.js Alpine e installa soltanto le dipendenze necessarie in produzione.
+
+### Docker Compose
+
+Docker Compose viene utilizzato per avviare localmente frontend e backend con un solo comando.
+
+Compose gestisce:
+
+- build delle immagini;
+- porte dei servizi;
+- variabili d’ambiente;
+- dipendenze tra frontend e backend;
+- health check;
+- rete Docker locale.
+
+### Netlify
+
+Netlify viene utilizzato per il deploy pubblico del frontend.
+
+### Render
+
+Render viene utilizzato per il deploy pubblico del backend.
+
+### MongoDB Atlas
+
+MongoDB Atlas viene utilizzato come database cloud.
+
+### Sentry
+
+Sentry viene utilizzato per raccogliere e analizzare gli errori applicativi.
+
+### UptimeRobot
+
+UptimeRobot viene utilizzato per verificare periodicamente la disponibilità dell’applicazione pubblica.
+
+## Pianificazione
+
+1. Analisi dell’applicazione e definizione degli ambienti.
+2. Preparazione delle variabili d’ambiente.
+3. Creazione dei Dockerfile.
+4. Creazione di Docker Compose.
+5. Verifica dell’avvio locale.
+6. Configurazione della pipeline CI.
+7. Configurazione del deploy automatico.
+8. Integrazione di Sentry.
+9. Configurazione di UptimeRobot.
+10. Raccolta di screenshot e link per la consegna.
+
+## Struttura del progetto
+
+```text
 tongue-news-chatbot/
 ├── backend/
 │   ├── models/
-│   │   └── Conversation.js
 │   ├── routes/
-│   │   └── newsRoutes.js
 │   ├── services/
-│   │   ├── aiService.js
-│   │   └── newsService.js
-│   ├── server.js
+│   ├── .dockerignore
+│   ├── .env
+│   ├── .env.example
+│   ├── Dockerfile
 │   ├── package.json
 │   ├── package-lock.json
-│   └── .gitignore
+│   └── server.js
 │
 ├── frontend/
 │   ├── public/
 │   ├── src/
-│   │   ├── services/
-│   │   │   └── api.js
-│   │   ├── App.jsx
-│   │   ├── App.css
-│   │   └── main.jsx
-│   ├── index.html
+│   ├── .dockerignore
+│   ├── .env
+│   ├── .env.example
+│   ├── Dockerfile
+│   ├── nginx.conf
 │   ├── package.json
 │   ├── package-lock.json
-│   ├── vite.config.js
-│   └── .gitignore
+│   └── vite.config.js
 │
+├── docker-compose.yml
+├── .gitignore
 └── README.md
- ## Variabili d'ambiente  Per motivi di sicurezza, le chiavi API e le credenziali non sono incluse nel codice sorgente.  Nel back end è necessario creare un file `.env` dentro la cartella `backend` con le seguenti variabili: env
+```
+
+I file `.env` sono presenti soltanto nell’ambiente locale e non vengono inclusi nel repository.
+
+## Variabili d’ambiente
+
+Le variabili sensibili non vengono salvate nel repository.
+
+I file reali:
+
+```text
+frontend/.env
+backend/.env
+```
+
+sono esclusi tramite `.gitignore` e `.dockerignore`.
+
+I file:
+
+```text
+frontend/.env.example
+backend/.env.example
+```
+
+documentano invece le variabili necessarie senza includere valori sensibili.
+
+### Variabili backend
+
+```env
+NODE_ENV=development
 PORT=5050
-NEWS_API_KEY=your_news_api_key
-OPENAI_API_KEY=your_openai_api_key
-MONGODB_URI=your_mongodb_connection_string
- Nel front end, in fase di deploy, è possibile configurare la variabile: env
-VITE_API_URL=https://url-del-backend.onrender.com
- In locale, il front end usa come URL di default: text
-http://localhost:5050
- ## Avvio in locale  Per avviare il progetto in locale è necessario eseguire separatamente back end e front end.  ### Avvio del back end bash
+MONGODB_URI=
+NEWS_API_KEY=
+OPENAI_API_KEY=
+FRONTEND_URL=http://localhost:8080
+```
+
+### Variabili frontend
+
+```env
+VITE_API_URL=http://localhost:5050
+```
+
+Le variabili che iniziano con `VITE_` vengono incorporate nel frontend durante la fase di build.
+
+## Sicurezza dei secrets
+
+Il file `.gitignore` esclude:
+
+```text
+.env
+.env.*
+```
+
+mantenendo versionabili soltanto i file dimostrativi:
+
+```text
+.env.example
+```
+
+Per verificare che un file `.env` non sia tracciato:
+
+```bash
+git ls-files backend/.env
+git ls-files frontend/.env
+```
+
+I comandi non devono restituire alcun risultato.
+
+Per controllare che i file siano ignorati:
+
+```bash
+git check-ignore -v backend/.env
+git check-ignore -v frontend/.env
+```
+
+Per verificare la cronologia Git:
+
+```bash
+git log --all -- backend/.env
+git log --all -- frontend/.env
+```
+
+Prima di ogni commit è possibile controllare il contenuto in staging con:
+
+```bash
+git diff --cached
+```
+
+## Avvio locale senza Docker
+
+### Prerequisiti
+
+- Node.js installato;
+- npm installato;
+- file `backend/.env` configurato;
+- file `frontend/.env` configurato;
+- accesso ai servizi MongoDB Atlas, News API e OpenAI.
+
+### Backend
+
+```bash
 cd backend
 npm install
 npm run dev
- Il back end sarà disponibile su: text
+```
+
+Il backend sarà disponibile su:
+
+```text
 http://localhost:5050
- ### Avvio del front end bash
+```
+
+Health check:
+
+```text
+http://localhost:5050/health
+```
+
+Risposta prevista:
+
+```json
+{
+  "status": "ok",
+  "service": "tongue-backend",
+  "environment": "development",
+  "timestamp": "..."
+}
+```
+
+### Frontend
+
+Da un secondo terminale:
+
+```bash
 cd frontend
 npm install
 npm run dev
- Il front end sarà disponibile su: text
-http://localhost:5173
- ## Deploy  Il progetto può essere pubblicato utilizzando piattaforme gratuite.  ### Back end  Il back end può essere pubblicato su Render come Web Service.  Impostazioni consigliate: text
-Root Directory: backend
-Build Command: npm install
-Start Command: npm start
- Su Render devono essere configurate le seguenti variabili d'ambiente: env
-PORT=5050
-NEWS_API_KEY=your_news_api_key
-OPENAI_API_KEY=your_openai_api_key
-MONGODB_URI=your_mongodb_connection_string
- ### Front end  Il front end può essere pubblicato su Netlify come applicazione Vite.  Impostazioni consigliate: text
-Base directory: frontend
-Build command: npm run build
-Publish directory: frontend/dist
- Su Netlify deve essere configurata la variabile d'ambiente: env
-VITE_API_URL=https://url-del-backend.onrender.com
- ## Sicurezza  Le API key non devono essere inserite direttamente nel codice e non devono essere caricate su GitHub.  Per questo motivo i file `.env` sono esclusi dal versionamento tramite `.gitignore`.  Il file `.gitignore` del back end include: text
-node_modules
-.env
- Il file `.gitignore` del front end include: text
-node_modules
-dist
-.env
 ```
+
+Il frontend sarà disponibile su:
+
+```text
+http://localhost:5173
+```
+
+In questo caso il backend deve autorizzare tramite CORS l’origine:
+
+```env
+FRONTEND_URL=http://localhost:5173
+```
+
+## Containerizzazione manuale
+
+### Build del backend
+
+Dalla directory principale del progetto:
+
+```bash
+docker build -t tongue-backend:local ./backend
+```
+
+### Avvio del backend
+
+```bash
+docker run --rm \
+  --name tongue-backend \
+  --env-file backend/.env \
+  -p 5050:5050 \
+  tongue-backend:local
+```
+
+### Build del frontend
+
+```bash
+docker build \
+  --build-arg VITE_API_URL=http://localhost:5050 \
+  -t tongue-frontend:local \
+  ./frontend
+```
+
+### Avvio del frontend
+
+```bash
+docker run --rm \
+  --name tongue-frontend \
+  -p 8080:80 \
+  tongue-frontend:local
+```
+
+Il frontend containerizzato sarà disponibile su:
+
+```text
+http://localhost:8080
+```
+
+Il relativo health check sarà disponibile su:
+
+```text
+http://localhost:8080/health
+```
+
+Quando il frontend viene eseguito sulla porta `8080`, il backend deve autorizzare questa origine:
+
+```env
+FRONTEND_URL=http://localhost:8080
+```
+
+### Controllo dei container
+
+```bash
+docker ps
+```
+
+### Arresto dei container
+
+```bash
+docker stop tongue-frontend tongue-backend
+```
+
+## Avvio locale con Docker Compose
+
+### Prerequisiti
+
+- Docker Desktop installato e in esecuzione;
+- file `backend/.env` configurato con le variabili richieste;
+- porte `5050` e `8080` disponibili.
+
+### Verifica della configurazione
+
+Per validare la sintassi del file Compose senza stampare la configurazione completa:
+
+```bash
+docker compose config --quiet
+```
+
+Il comando:
+
+```bash
+docker compose config
+```
+
+mostra invece la configurazione risolta e può includere i valori caricati dal file `.env`. Il relativo output non deve essere condiviso se contiene credenziali o token.
+
+### Avvio
+
+Dalla directory principale del progetto:
+
+```bash
+docker compose up --build
+```
+
+Docker Compose:
+
+1. costruisce l’immagine del backend;
+2. costruisce l’immagine del frontend;
+3. avvia il backend;
+4. attende che il backend superi l’health check;
+5. avvia il frontend.
+
+I servizi saranno disponibili ai seguenti indirizzi:
+
+- frontend: `http://localhost:8080`;
+- backend: `http://localhost:5050`;
+- health check frontend: `http://localhost:8080/health`;
+- health check backend: `http://localhost:5050/health`.
+
+### Avvio in background
+
+```bash
+docker compose up --build -d
+```
+
+### Stato dei servizi
+
+```bash
+docker compose ps
+```
+
+Il risultato atteso mostra entrambi i servizi con stato `healthy`.
+
+### Visualizzazione dei log
+
+Tutti i servizi:
+
+```bash
+docker compose logs
+```
+
+Log in tempo reale:
+
+```bash
+docker compose logs -f
+```
+
+Solo backend:
+
+```bash
+docker compose logs backend
+```
+
+Solo frontend:
+
+```bash
+docker compose logs frontend
+```
+
+### Arresto
+
+```bash
+docker compose down
+```
+
+Il comando arresta e rimuove i container e la rete creata da Docker Compose.
+
+### Ricostruzione completa delle immagini
+
+```bash
+docker compose build --no-cache
+docker compose up
+```
+
+## Health check
+
+Il backend espone:
+
+```text
+GET /health
+```
+
+e restituisce informazioni sullo stato del servizio.
+
+Il frontend espone tramite Nginx:
+
+```text
+GET /health
+```
+
+Gli health check vengono utilizzati da Docker Compose per:
+
+- verificare la disponibilità dei servizi;
+- impedire l’avvio prematuro del frontend;
+- individuare eventuali problemi durante l’avvio;
+- fornire endpoint utilizzabili dai sistemi di monitoraggio.
+
+## Verifiche eseguite
+
+Sono state completate le seguenti verifiche locali:
+
+- avvio del backend tramite npm;
+- avvio del frontend tramite Vite;
+- linting del frontend;
+- build di produzione del frontend;
+- build dell’immagine Docker del backend;
+- build dell’immagine Docker del frontend;
+- avvio dei due container separatamente;
+- verifica degli health check;
+- verifica della comunicazione frontend-backend;
+- avvio completo tramite Docker Compose;
+- verifica di entrambi i servizi con stato healthy;
+- esecuzione di una richiesta completa dall’interfaccia.
+
+## Pipeline CI
+
+La Continuous Integration è implementata tramite GitHub Actions nel file:
+
+```text
+.github/workflows/ci.yml
+```
+
+Il workflow viene eseguito automaticamente in caso di:
+
+- push su `main`;
+- push su `develop`;
+- push su `feature/devops-lifecycle`;
+- pull request verso `main`;
+- pull request verso `develop`.
+
+La pipeline contiene tre job.
+
+### Frontend lint and build
+
+Il job:
+
+1. scarica il repository;
+2. configura Node.js;
+3. installa le dipendenze con `npm ci`;
+4. esegue il linting;
+5. crea la build di produzione del frontend.
+
+### Backend lint
+
+Il job:
+
+1. scarica il repository;
+2. configura Node.js;
+3. installa le dipendenze con `npm ci`;
+4. esegue il linting del backend.
+
+### Build Docker images
+
+Il job viene eseguito soltanto dopo il completamento corretto dei controlli frontend e backend.
+
+Costruisce:
+
+```text
+tongue-backend:ci
+tongue-frontend:ci
+```
+
+Le immagini vengono costruite per verificarne la validità, ma in questa fase non vengono pubblicate in un container registry.
+
+Se un comando di linting restituisce un errore, il relativo job fallisce e la build Docker non viene eseguita.
 
 ## Stato del progetto
 
-Il progetto implementa correttamente:
-
-- front end React con singola input-box;
-- selezione della data;
-- endpoint back end dedicato;
-- recupero articoli tramite API esterne;
-- integrazione con modello AI;
-- system prompt personalizzato;
-- generazione di riassunti giornalistici;
-- visualizzazione delle fonti;
-- persistenza delle conversazioni;
-- predisposizione al deploy.
-
-## Autore
-
-Progetto realizzato da Marco Saccani.
+- [x] Analisi iniziale
+- [x] Definizione degli ambienti
+- [x] Gestione iniziale dei file `.env`
+- [x] Endpoint di health check backend
+- [x] Endpoint di health check frontend
+- [x] Dockerfile frontend
+- [x] Dockerfile backend
+- [x] Docker Compose
+- [x] Test locale dei container
+- [x] Documentazione dei comandi Docker
+- [x] Linting backend
+- [x] Pipeline CI
+- [ ] Configurazione GitHub Secrets
+- [ ] Pipeline CD
+- [ ] Deploy automatico
+- [ ] Integrazione Sentry
+- [ ] Configurazione UptimeRobot
+- [ ] Raccolta screenshot e link finali
