@@ -750,5 +750,5 @@ L’integrazione è stata verificata generando un errore controllato in ambiente
 - [x] Pipeline CD
 - [x] Deploy automatico
 - [x] Integrazione Sentry
-- [ ] Configurazione UptimeRobot
+- [x] Configurazione UptimeRobot
 - [ ] Raccolta screenshot e link finali
